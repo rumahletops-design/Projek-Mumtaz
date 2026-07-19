@@ -340,7 +340,7 @@
             <div id="visual-besar" class="visual-besar">🐔</div>
             <div id="txt-mudah" class="perkataan-mudah">AYAM</div>
         </div>
-        <div id="pujian-belajar" class="pujian-box">Wah, pandainya!</div>
+        <div id="pujian-belajar" class="pujian-box">Wahhh, pandainya!</div>
         <div class="navigasi-bawah">
             <button class="btn-nav" onclick="navKad(-1)">←</button>
             <button class="btn-nav" onclick="navKad(1)">→</button>
@@ -351,7 +351,7 @@
     <div id="skrin-permainan" class="skrin">
         <div class="header-modul">
             <button class="btn-kembali" onclick="kembaliUtama()">🏠</button>
-            <div id="pujian-main" class="pujian-box">Hebatnya!</div>
+            <div id="pujian-main" class="pujian-box">Hebatlah sayang!</div>
         </div>
         <div id="soalan-teks" class="soalan-box">Mana bola?</div>
         <div class="pilihan-container">
@@ -454,21 +454,23 @@
         {v:"🌸", p:"Merah Jambu", bg:"#FFE6F2"}, {v:"⚫", p:"Hitam", bg:"#Eaeaea"}, {v:"⚪", p:"Putih", bg:"#F7F9FC"}
     ];
 
-    const pujianSpontan = ["Wah, pandainya!", "Hebatnya!", "Comelnya!", "Terbaiklah!"];
+    // Pujian gaya emak-emak yang sangat manja dan gembira
+    const pujianSpontanTeks = ["Wahhh, pandainya anak ibu!", "Hebatlah sayang!", "Comelnya dia!", "Bijaknya anak soleh solehah ni!"];
+    const pujianSpontanSuara = ["Wahhh pandainya anak ibu", "Hebatlah sayang", "Comelnya dia", "Bijaknya anak ibu ni"];
 
     let modulSemasa = '';
     let indeksSemasa = 0;
     let dataSemasa = [];
     let dipelajari = { huruf: new Set(), nombor: new Set(), bentuk: new Set(), warna: new Set() };
 
-    // FUNGSI SUARA TERUS SEBUT PERKATAAN LENGKAP
+    // PENUTUR SUARA: NADA TINGGI, CERIA & GAYA BERBUAL DENGAN ANAK
     function sebut(teks) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             let ucapan = new SpeechSynthesisUtterance(teks);
             ucapan.lang = 'ms-MY';
-            ucapan.rate = 0.85; // Kelajuan santai dan ceria
-            ucapan.pitch = 1.45; // Nada tinggi dan mesra kanak-kanak
+            ucapan.rate = 0.88; // Kelajuan sedikit santai tapi bertenaga
+            ucapan.pitch = 1.55; // Nada dinaikkan tinggi untuk meniru suara keibuan (motherese)
             window.speechSynthesis.speak(ucapan);
         }
     }
@@ -518,17 +520,17 @@
         kemaskiniKad();
     }
 
-    // Tiada sebutan abjad tunggal atau ejaan, terus sebut nama penuh objek
+    // Gaya percakapan harian (Contoh: "Tengok ni... Ayam!")
     function ulangAudio() {
         if (!dataSemasa[indeksSemasa]) return;
         let item = dataSemasa[indeksSemasa];
         
         if (modulSemasa === 'huruf' || modulSemasa === 'nombor') {
-            sebut(item.p);
+            sebut("Tengok ni... " + item.p);
         } else if (modulSemasa === 'bentuk') {
-            sebut("Bentuk " + item.p);
+            sebut("Ini... bentuk " + item.p);
         } else if (modulSemasa === 'warna') {
-            sebut("Warna " + item.p);
+            sebut("Cuba tengok... warna " + item.p);
         }
     }
 
@@ -538,18 +540,18 @@
 
         visualBesar.classList.add('lompat');
         
-        let pujian = pujianSpontan[Math.floor(Math.random() * pujianSpontan.length)];
-        pujianBox.innerText = pujian;
+        let rawakIndeks = Math.floor(Math.random() * pujianSpontanTeks.length);
+        pujianBox.innerText = pujianSpontanTeks[rawakIndeks];
         pujianBox.style.visibility = 'visible';
 
-        sebut(pujian);
+        sebut(pujianSpontanSuara[rawakIndeks]);
 
         setTimeout(() => {
             visualBesar.classList.remove('lompat');
         }, 300);
     }
 
-    // PERMAINAN
+    // PERMAINAN GAYA IBU MENGAJAK ANAK MAIN
     let jawapanBetulIndeks = 0;
     let dataSoalanSemasa = {};
 
@@ -559,7 +561,6 @@
         
         let jenisKuiz = Math.floor(Math.random() * 4);
         let setData = dataHuruf;
-        let arahanSebut = "Mana ";
 
         if (jenisKuiz === 1) setData = dataNombor;
         if (jenisKuiz === 2) setData = dataBentuk;
@@ -577,12 +578,13 @@
         document.getElementById('skrin-permainan').style.backgroundColor = "#E8F5E9";
         
         let namaObjek = dataSoalanSemasa.p;
-        document.getElementById('soalan-teks').innerText = arahanSebut + namaObjek + "?";
-
+        
+        // Ayat teks & sebutan santai
+        document.getElementById('soalan-teks').innerText = "Mana satu " + namaObjek.toLowerCase() + " ek?";
         document.getElementById('pilihan-1').innerText = item1.v;
         document.getElementById('pilihan-2').innerText = item2.v;
 
-        sebut(arahanSebut + namaObjek);
+        sebut("Sayang... mana satu " + namaObjek + " ek? Cer cari.");
     }
 
     function semakJawapan(indeksDipilih) {
@@ -590,20 +592,21 @@
         let kadDipilih = document.getElementById(`pilihan-${indeksDipilih + 1}`);
 
         if (indeksDipilih === jawapanBetulIndeks) {
-            let pujian = pujianSpontan[Math.floor(Math.random() * pujianSpontan.length)];
-            pujianBox.innerText = pujian;
+            let rawakIndeks = Math.floor(Math.random() * pujianSpontanTeks.length);
+            pujianBox.innerText = pujianSpontanTeks[rawakIndeks];
             pujianBox.style.visibility = 'visible';
-            sebut(pujian + " Betul!");
+            
+            sebut("Yeayyy betul! " + pujianSpontanSuara[rawakIndeks]);
             
             kadDipilih.classList.add('lompat');
             setTimeout(() => {
                 kadDipilih.classList.remove('lompat');
                 binaPermainan();
-            }, 1400);
+            }, 1600);
         } else {
-            pujianBox.innerText = "Cuba lagi sayang.";
+            pujianBox.innerText = "Alahhh... cuba lagi sayang.";
             pujianBox.style.visibility = 'visible';
-            sebut("Cuba lagi.");
+            sebut("Alahhh... salah lah sayang. Cuba lagi jom.");
             kadDipilih.classList.add('goyang');
             setTimeout(() => kadDipilih.classList.remove('goyang'), 400);
         }
