@@ -5,21 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mumtaz Edukids - Belajar, Kenal dan Ceria!</title>
     
-    <!-- Tailwind CSS untuk Reka Bentuk Ceria & Responsif -->
+    <!-- Tailwind CSS untuk Reka Bentuk Ceria & Butang Besar -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Animate.css untuk Animasi Lembut 3D/Pop-up -->
+    <!-- Animate.css untuk Animasi Lembut Khas Kanak-Kanak -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
-    <!-- Google Fonts - Fredoka One untuk Tulisan Kanak-Kanak yang Bulat & Jelas -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Fredoka untuk Tulisan Bulat yang Jelas & Mudah Dilihat -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDK Modules -->
+    <!-- Integrasi Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Konfigurasi Firebase Anda
         const firebaseConfig = {
             apiKey: "AIzaSyCo_88Uwl-E7-C0Z0por2Agv-plToDlEgk",
             authDomain: "projek-mumtaz.firebaseapp.com",
@@ -30,11 +29,9 @@
             appId: "1:448069580212:web:c6faf46d39ed1ee61e6ee1"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
-        // Dedahkan fungsi rekod ke window supaya boleh diakses oleh aplikasi utama
         window.logActivityToFirebase = function(modul, item) {
             try {
                 const activityRef = ref(database, 'aktiviti_penggunaan');
@@ -45,7 +42,7 @@
                     masa: serverTimestamp()
                 });
             } catch (error) {
-                console.log("Firebase log ditahan/offline: ", error.message);
+                console.log("Firebase luar talian:", error.message);
             }
         };
     </script>
@@ -56,7 +53,7 @@
             user-select: none;
             -webkit-user-select: none;
             touch-action: manipulation;
-            background-color: #FEF9E7;
+            background-color: #FFFDF3;
         }
         .bouncing-slow {
             animation: bounce 3s infinite;
@@ -65,188 +62,175 @@
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .card-pop:active {
-            transform: scale(0.9);
+            transform: scale(0.92);
         }
     </style>
 </head>
-<body class="overflow-x-hidden min-h-screen flex flex-col justify-between">
+<body onclick="aktifkanAudioLatar()" class="overflow-x-hidden min-h-screen flex flex-col justify-between select-none">
 
-    <!-- EFEK ANIMASI PUJIAN (BELON & BINTANG) -->
+    <!-- KESAN VISUAL PUJIAN (POP-UP SKRIN PENUH) -->
     <div id="praise-overlay" class="fixed inset-0 pointer-events-none z-50 flex items-center justify-center hidden">
-        <div id="praise-text" class="text-6xl md:text-8xl font-bold text-white drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] animate__animated"></div>
+        <div id="praise-text" class="text-6xl md:text-8xl font-bold text-white drop-shadow-[0_6px_6px_rgba(0,0,0,0.4)] animate__animated"></div>
     </div>
 
-    <!-- HEADER / NAVIGATION UTAMA -->
-    <header class="bg-white shadow-md p-4 flex justify-between items-center z-10">
-        <button onclick="bukaHalaman('utama')" class="flex items-center space-x-2 text-amber-500 font-bold text-xl">
-            <span>🏠</span> <span class="hidden sm:inline">Utama</span>
+    <!-- PENG KEPALA / HEADER APLIKASI -->
+    <header class="bg-white shadow-sm p-4 flex justify-between items-center z-10 border-b-2 border-yellow-100">
+        <button onclick="bukaHalaman('utama'); mainBunyiPop();" class="flex items-center space-x-1 text-amber-500 font-bold text-xl card-pop bg-amber-50 px-3 py-1.5 rounded-full">
+            <span>🏠</span> <span>Utama</span>
         </button>
         <div class="text-center">
             <h1 class="text-2xl font-bold text-amber-500 tracking-wide">MUMTAZ EDUKIDS</h1>
             <p class="text-xs text-amber-400 font-medium italic">"Belajar, Kenal dan Ceria!"</p>
         </div>
-        <button onclick="bukaModulIbuBapa()" class="bg-purple-100 hover:bg-purple-200 text-purple-700 font-semibold px-3 py-1.5 rounded-full text-sm flex items-center space-x-1 border border-purple-300 shadow-sm">
-            <span>🔒</span> <span>Ibu Bapa</span>
-        </button>
+        <div class="flex items-center space-x-2">
+            <!-- Butang Kawalan Muzik Latar Belakang -->
+            <button id="btn-muzik" onclick="tukarStatusMuzik(event)" class="bg-amber-100 border border-amber-300 p-2 rounded-full text-sm card-pop">
+                🎵 Buka Muzik
+            </button>
+            <button onclick="bukaModulIbuBapa(); mainBunyiPop();" class="bg-purple-100 hover:bg-purple-200 text-purple-700 font-semibold px-3 py-1.5 rounded-full text-sm flex items-center space-x-1 border border-purple-300 shadow-sm card-pop">
+                <span>🔒</span> <span>Ibu Bapa</span>
+            </button>
+        </div>
     </header>
 
-    <!-- KANDUNGAN UTAMA (DINAMIK) -->
+    <!-- KANDUNGAN UTAMA DINAMIK -->
     <main class="flex-grow p-4 max-w-4xl mx-auto w-full flex items-center justify-center">
         
         <!-- HALAMAN UTAMA -->
-        <div id="page-utama" class="w-full text-center space-y-6">
+        <div id="page-utama" class="w-full text-center space-y-8 animate__animated animate__fadeIn">
             <div class="bouncing-slow inline-block">
-                <span class="text-8xl">🎈</span>
+                <span class="text-8xl filter drop-shadow-md">✨</span>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-                <button onclick="mulaModul('huruf')" class="card-pop bg-red-400 hover:bg-red-500 text-white rounded-3xl p-6 shadow-lg flex flex-col items-center justify-center space-y-2 border-b-8 border-red-600">
-                    <span class="text-5xl">🅰️</span>
+                <button onclick="mulaModul('huruf'); mainBunyiPop();" class="card-pop bg-red-400 hover:bg-red-500 text-white rounded-3xl p-6 shadow-lg flex flex-col items-center justify-center space-y-2 border-b-8 border-red-600">
+                    <span class="text-6xl">🅰️</span>
                     <span class="text-xl font-bold tracking-wider">HURUF</span>
                 </button>
-                <button onclick="mulaModul('nombor')" class="card-pop bg-blue-400 hover:bg-blue-500 text-white rounded-3xl p-6 shadow-lg flex flex-col items-center justify-center space-y-2 border-b-8 border-blue-600">
-                    <span class="text-5xl">🔢</span>
+                <button onclick="mulaModul('nombor'); mainBunyiPop();" class="card-pop bg-blue-400 hover:bg-blue-500 text-white rounded-3xl p-6 shadow-lg flex flex-col items-center justify-center space-y-2 border-b-8 border-blue-600">
+                    <span class="text-6xl">🔢</span>
                     <span class="text-xl font-bold tracking-wider">NOMBOR</span>
                 </button>
-                <button onclick="mulaModul('bentuk')" class="card-pop bg-green-400 hover:bg-green-500 text-white rounded-3xl p-6 shadow-lg flex flex-col items-center justify-center space-y-2 border-b-8 border-green-600">
-                    <span class="text-5xl">🔺</span>
+                <button onclick="mulaModul('bentuk'); mainBunyiPop();" class="card-pop bg-green-400 hover:bg-green-500 text-white rounded-3xl p-6 shadow-lg flex flex-col items-center justify-center space-y-2 border-b-8 border-green-600">
+                    <span class="text-6xl">🔺</span>
                     <span class="text-xl font-bold tracking-wider">BENTUK</span>
                 </button>
-                <button onclick="mulaModul('warna')" class="card-pop bg-yellow-400 hover:bg-yellow-500 text-white rounded-3xl p-6 shadow-lg flex flex-col items-center justify-center space-y-2 border-b-8 border-yellow-600">
-                    <span class="text-5xl">🎨</span>
+                <button onclick="mulaModul('warna'); mainBunyiPop();" class="card-pop bg-yellow-400 hover:bg-yellow-500 text-white rounded-3xl p-6 shadow-lg flex flex-col items-center justify-center space-y-2 border-b-8 border-yellow-600">
+                    <span class="text-6xl">🎨</span>
                     <span class="text-xl font-bold tracking-wider">WARNA</span>
                 </button>
             </div>
             <div class="pt-4">
-                <button onclick="mulaModul('main')" class="card-pop bg-pink-500 hover:bg-pink-600 text-white rounded-full px-12 py-5 shadow-xl text-3xl font-bold border-b-8 border-pink-700 animate__animated animate__pulse animate__infinite">
+                <button onclick="mulaModul('main'); mainBunyiPop();" class="card-pop bg-pink-500 hover:bg-pink-600 text-white rounded-full px-14 py-5 shadow-xl text-3xl font-bold border-b-8 border-pink-700 animate__animated animate__pulse animate__infinite">
                     🎮 JOM MAIN!
                 </button>
             </div>
         </div>
 
-        <!-- TEMPLATE UNTUK KAD PEMBELAJARAN (HURUF, NOMBOR, BENTUK, WARNA) -->
-        <div id="page-belajar" class="w-full hidden text-center space-y-6">
-            <!-- Kad Pembelajaran Utama -->
-            <div id="main-flashcard" onclick="responSentuhan()" class="card-pop bg-white rounded-3xl p-6 shadow-2xl border-4 border-amber-300 max-w-sm mx-auto cursor-pointer relative overflow-hidden bg-radial from-white to-amber-50">
-                
-                <!-- Butang Audio Kecil di Atas Kad -->
+        <!-- MODUL BELAJAR: KAD IMBASAN -->
+        <div id="page-belajar" class="w-full hidden text-center space-y-6 animate__animated animate__fadeIn">
+            <div id="main-flashcard" onclick="responSentuhan()" class="card-pop bg-white rounded-3xl p-6 shadow-2xl border-4 border-amber-300 max-w-sm mx-auto cursor-pointer relative overflow-hidden">
                 <div class="absolute top-4 right-4 text-3xl animate__animated animate__swing animate__infinite duration-3000">🔊</div>
-                
-                <!-- Tulisan Besar / Utama -->
                 <div id="card-header-text" class="text-8xl font-black text-amber-500 tracking-tight my-2">A</div>
-                
-                <!-- Visual Besar Realistik (Emoji/3D representation) -->
-                <div id="card-visual" class="text-9xl my-6 filter drop-shadow-md animate__animated transition-transform duration-300">🐔</div>
-                
-                <!-- Perkataan Mudah Bersahaja -->
+                <div id="card-visual" class="text-9xl my-6 filter drop-shadow-sm animate__animated transition-transform duration-300">🐔</div>
                 <div id="card-footer-text" class="text-4xl font-bold text-gray-700 tracking-wide mt-2">AYAM</div>
             </div>
 
-            <!-- Navigasi Bawah (Kiri & Kanan) -->
             <div class="flex justify-center items-center space-x-12 pt-4">
-                <button onclick="navigasiItem(-1)" class="card-pop bg-amber-400 text-white font-bold p-5 rounded-full shadow-lg text-3xl border-b-4 border-amber-600">
+                <button onclick="navigasiItem(-1); mainBunyiPop();" class="card-pop bg-amber-400 text-white font-bold p-5 rounded-full shadow-lg text-3xl border-b-4 border-amber-600">
                     ⬅️
                 </button>
-                <button onclick="navigasiItem(1)" class="card-pop bg-amber-400 text-white font-bold p-5 rounded-full shadow-lg text-3xl border-b-4 border-amber-600">
+                <button onclick="navigasiItem(1); mainBunyiPop();" class="card-pop bg-amber-400 text-white font-bold p-5 rounded-full shadow-lg text-3xl border-b-4 border-amber-600">
                     ➡️
                 </button>
             </div>
         </div>
 
-        <!-- TEMPLATE UNTUK MODUL PERMAINAN ("PILIH YANG BETUL") -->
-        <div id="page-permainan" class="w-full hidden text-center space-y-6">
-            <h2 id="game-instruction" class="text-3xl font-bold text-purple-700 bg-purple-100 py-3 px-6 rounded-full inline-block shadow-inner">Mana bola?</h2>
+        <!-- MODUL PERMAINAN: PILIH YANG BETUL -->
+        <div id="page-permainan" class="w-full hidden text-center space-y-6 animate__animated animate__fadeIn">
+            <h2 id="game-instruction" class="text-3xl font-bold text-purple-700 bg-purple-100 py-3 px-8 rounded-full inline-block shadow-inner">Mana bola?</h2>
             
-            <div class="flex justify-center items-center gap-6 max-w-md mx-auto pt-4">
-                <!-- Pilihan 1 -->
-                <button id="btn-choice-0" onclick="semakJawapan(0)" class="card-pop bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200 flex flex-col items-center flex-1 min-h-[180px] justify-center">
+            <div class="flex justify-center items-center gap-6 max-w-md mx-auto pt-6">
+                <button id="btn-choice-0" onclick="semakJawapan(0)" class="card-pop bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200 flex flex-col items-center flex-1 min-h-[190px] justify-center">
                     <span id="choice-val-0" class="text-7xl mb-2">⚽</span>
                     <span id="choice-lbl-0" class="text-2xl font-bold text-gray-600">BOLA</span>
                 </button>
                 
-                <!-- Pilihan 2 -->
-                <button id="btn-choice-1" onclick="semakJawapan(1)" class="card-pop bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200 flex flex-col items-center flex-1 min-h-[180px] justify-center">
+                <button id="btn-choice-1" onclick="semakJawapan(1)" class="card-pop bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200 flex flex-col items-center flex-1 min-h-[190px] justify-center">
                     <span id="choice-val-1" class="text-7xl mb-2">🍎</span>
                     <span id="choice-lbl-1" class="text-2xl font-bold text-gray-600">EPAL</span>
                 </button>
             </div>
         </div>
 
-        <!-- MODUL IBU BAPA (PENGESAHAN KESELAMATAN & DASHBOARD) -->
-        <div id="page-ibubapa" class="w-full hidden max-w-md mx-auto bg-white rounded-3xl p-6 shadow-2xl border-2 border-purple-200">
-            <!-- Gatekeeper Kuiz Matematik Mudah -->
+        <!-- MODUL IBU BAPA -->
+        <div id="page-ibubapa" class="w-full hidden max-w-md mx-auto bg-white rounded-3xl p-6 shadow-2xl border-2 border-purple-200 animate__animated animate__zoomIn">
             <div id="parent-gate">
-                <h3 class="text-xl font-bold text-gray-700 text-center mb-4">🔒 Sekatan Ibu Bapa</h3>
-                <p class="text-sm text-gray-500 text-center mb-6">Sila jawab soalan ini untuk masuk:</p>
-                <div class="bg-gray-100 p-4 rounded-xl text-center text-2xl font-bold mb-4 tracking-wider" id="gate-question">5 + 3 = ?</div>
+                <h3 class="text-xl font-bold text-gray-700 text-center mb-4">🔒 Sekatan Keselamatan Ibu Bapa</h3>
+                <p class="text-sm text-gray-500 text-center mb-6">Sila jawab soalan mudah ini untuk masuk:</p>
+                <div class="bg-gray-100 p-4 rounded-xl text-center text-2xl font-bold mb-4 tracking-wider" id="gate-question">5 + 4 = ?</div>
                 <input type="number" id="gate-answer" class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl mb-4 focus:border-purple-500 outline-none" placeholder="Jawapan anda">
-                <button onclick="sahkanGateParent()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold p-3 rounded-xl shadow-md">Sahkan & Masuk</button>
+                <button onclick="sahkanGateParent(); mainBunyiPop();" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold p-3 rounded-xl shadow-md card-pop">Sahkan & Masuk</button>
             </div>
 
-            <!-- Dashboard Paparan Data -->
             <div id="parent-dashboard" class="hidden space-y-4">
                 <div class="flex justify-between items-center border-b pb-2">
-                    <h3 class="text-xl font-bold text-purple-700">📊 Laporan Aktiviti</h3>
-                    <button onclick="bukaHalaman('utama')" class="text-sm text-gray-500 font-semibold">Tutup</button>
+                    <h3 class="text-xl font-bold text-purple-700">📊 Laporan Aktiviti Anak</h3>
+                    <button onclick="bukaHalaman('utama'); mainBunyiPop();" class="text-sm text-gray-500 font-semibold card-pop bg-gray-100 px-3 py-1 rounded-full">Tutup</button>
                 </div>
-                <div class="space-y-3 max-h-60 overflow-y-auto text-sm" id="parent-logs-list">
-                    <!-- Data aktiviti tempatan dijana di sini -->
+                <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded-lg space-y-1">
+                    <div>🎯 <b>Jumlah Klik Dipelajari:</b> <span id="stat-total-klik">0</span> kali</div>
                 </div>
-                <div class="bg-purple-50 p-3 rounded-xl border border-purple-200 text-xs text-purple-800">
-                    💡 <strong>Info Pintar Mumtaz:</strong> Semua aktiviti jejakan pembelajaran anak anda dihantar secara masa nyata ke pangkalan data awan Firebase anda.
-                </div>
+                <div class="space-y-2 max-h-52 overflow-y-auto text-xs" id="parent-logs-list"></div>
             </div>
         </div>
 
     </main>
 
-    <!-- FOOTER HIASAN -->
-    <footer class="p-2 text-center text-xs text-gray-400 font-medium">
-        &copy; 2026 Mumtaz Edukids. Rekaan Pendidikan Awal Kanak-Kanak Malaysia.
+    <footer class="p-3 text-center text-xs text-gray-400 font-medium bg-white border-t border-gray-100">
+        &copy; 2026 Mumtaz Edukids - Pendekatan Ceria 1 hingga 2 Tahun.
     </footer>
 
-    <!-- LOGIK JAVASCRIPT APLIKASI -->
     <script>
-        // Pangkalan Data Set Pembelajaran Mengikut Kesesuaian Umur 1-2 Tahun
         const dataModul = {
             huruf: [
-                { id: "A", visual: "🐔", text: "AYAM", audioStr: "A. Ayam." },
-                { id: "B", visual: "⚽", text: "BOLA", audioStr: "B. Bola." },
-                { id: "C", visual: "☕", text: "CAWAN", audioStr: "C. Cawan." },
-                { id: "D", visual: "💵", text: "DUIT", audioStr: "D. Duit." },
-                { id: "E", visual: "🍎", text: "EPAL", audioStr: "E. Epal." },
-                { id: "F", visual: "🛳️", text: "FERI", audioStr: "F. Feri." },
-                { id: "G", visual: "🐘", text: "GAJAH", audioStr: "G. Gajah." },
-                { id: "H", visual: "🚁", text: "HELIKOPTER", audioStr: "H. Helikopter." },
-                { id: "I", visual: "🐟", text: "IKAN", audioStr: "I. Ikan." },
-                { id: "J", visual: "⌚", text: "JAM TANGAN", audioStr: "J. Jam tangan." },
-                { id: "K", visual: "🐱", text: "KUCING", audioStr: "K. Kucing." },
-                { id: "L", visual: "🚛", text: "LORI", audioStr: "L. Lori." },
-                { id: "M", visual: "👁️", text: "MATA", audioStr: "M. Mata." },
-                { id: "N", visual: "🍍", text: "NENAS", audioStr: "N. Nenas." },
-                { id: "O", visual: "🍊", text: "OREN", audioStr: "O. Oren." },
-                { id: "P", visual: "🍌", text: "PISANG", audioStr: "P. Pisang." },
-                { id: "Q", visual: "📖", text: "QURAN", audioStr: "Q. Quran." },
-                { id: "R", visual: "🏠", text: "RUMAH", audioStr: "R. Rumah." },
-                { id: "S", visual: "🥛", text: "SUSU", audioStr: "S. Susu." },
-                { id: "T", visual: "🧢", text: "TOPI", audioStr: "T. Topi." },
-                { id: "U", visual: "🦐", text: "UDANG", audioStr: "U. Udang." },
-                { id: "V", visual: "🚐", text: "VAN", audioStr: "V. Van." },
-                { id: "W", visual: "🔌", text: "WAYAR", audioStr: "W. Wayar." },
-                { id: "X", visual: "🎹", text: "XILOFON", audioStr: "X. Xilofon." },
-                { id: "Y", visual: "🪀", text: "YOYO", audioStr: "Y. Yoyo." },
-                { id: "Z", visual: "🦓", text: "ZEBRA", audioStr: "Z. Zebra." }
+                { id: "A", visual: "🐔", text: "AYAM", audioStr: "A... Ayam." },
+                { id: "B", visual: "⚽", text: "BOLA", audioStr: "B... Bola." },
+                { id: "C", visual: "☕", text: "CAWAN", audioStr: "C... Cawan." },
+                { id: "D", visual: "💵", text: "DUIT", audioStr: "D... Duit." },
+                { id: "E", visual: "🍎", text: "EPAL", audioStr: "E... Epal." },
+                { id: "F", visual: "🛳️", text: "FERI", audioStr: "F... Feri." },
+                { id: "G", visual: "🐘", text: "GAJAH", audioStr: "G... Gajah." },
+                { id: "H", visual: "🚁", text: "HELIKOPTER", audioStr: "H... Helikopter." },
+                { id: "I", visual: "🐟", text: "IKAN", audioStr: "I... Ikan." },
+                { id: "J", visual: "⌚", text: "JAM TANGAN", audioStr: "J... Jam tangan." },
+                { id: "K", visual: "🐱", text: "KUCING", audioStr: "K... Kucing." },
+                { id: "L", visual: "🚛", text: "LORI", audioStr: "L... Lori." },
+                { id: "M", visual: "👁️", text: "MATA", audioStr: "M... Mata." },
+                { id: "N", visual: "🍍", text: "NENAS", audioStr: "N... Nenas." },
+                { id: "O", visual: "🍊", text: "OREN", audioStr: "O... Oren." },
+                { id: "P", visual: "🍌", text: "PISANG", audioStr: "P... Pisang." },
+                { id: "Q", visual: "📖", text: "QURAN", audioStr: "Q... Quran." },
+                { id: "R", visual: "🏠", text: "RUMAH", audioStr: "R... Rumah." },
+                { id: "S", visual: "🥛", text: "SUSU", audioStr: "S... Susu." },
+                { id: "T", visual: "🧢", text: "TOPI", audioStr: "T... Topi." },
+                { id: "U", visual: "🦐", text: "UDANG", audioStr: "U... Udang." },
+                { id: "V", visual: "🚐", text: "VAN", audioStr: "V... Van." },
+                { id: "W", visual: "🔌", text: "WAYAR", audioStr: "W... Wayar." },
+                { id: "X", visual: "🎹", text: "XILOFON", audioStr: "X... Xilofon." },
+                { id: "Y", visual: "🪀", text: "YOYO", audioStr: "Y... Yoyo." },
+                { id: "Z", visual: "🦓", text: "ZEBRA", audioStr: "Z... Zebra." }
             ],
             nombor: [
-                { id: "1", visual: "⚽", text: "SATU BOLA", audioStr: "Satu." },
-                { id: "2", visual: "⚽⚽", text: "DUA BOLA", audioStr: "Satu. Dua." },
-                { id: "3", visual: "🍎🍎🍎", text: "TIGA EPAL", audioStr: "Satu. Dua. Tiga." },
-                { id: "4", visual: "🍌🍌🍌🍌", text: "EMPAT PISANG", audioStr: "Satu. Dua. Tiga. Empat." },
-                { id: "5", visual: "⭐⭐⭐⭐⭐", text: "LIMA BINTANG", audioStr: "Satu. Dua. Tiga. Empat. Lima." },
-                { id: "6", visual: "🚗🚗🚗🚗🚗🚗", text: "ENAM KERETA", audioStr: "Satu. Dua. Tiga. Empat. Lima. Enam." },
-                { id: "7", visual: "🐥🐥🐥🐥🐥🐥🐥", text: "TUJUH ANAK AYAM", audioStr: "Satu. Dua. Tiga. Empat. Lima. Enam. Tujuh." },
-                { id: "8", visual: "🐟🐟🐟🐟🐟🐟🐟🐟", text: "LAPAN IKAN", audioStr: "Satu. Dua. Tiga. Empat. Lima. Enam. Tujuh. Lapan." },
-                { id: "9", visual: "🎈🎈🎈🎈🎈🎈🎈🎈🎈", text: "SEMBILAN BELON", audioStr: "Satu. Dua. Tiga. Empat. Lima. Enam. Tujuh. Lapan. Sembilan." },
-                { id: "10", visual: "⭐⭐⭐⭐⭐⭐⭐⭐", text: "SEPULUH BINTANG", audioStr: "Satu. Dua. Tiga. Empat. Lima. Enam. Tujuh. Lapan. Sembilan. Sepuluh." }
+                { id: "1", visual: "⚽", text: "SATU BOLA", audioStr: "Satu bola." },
+                { id: "2", visual: "⚽⚽", text: "DUA BOLA", audioStr: "Satu... dua... dua bola." },
+                { id: "3", visual: "🍎🍎🍎", text: "TIGA EPAL", audioStr: "Satu... dua... tiga... tiga epal." },
+                { id: "4", visual: "🍌🍌🍌🍌", text: "EMPAT PISANG", audioStr: "Satu... dua... tiga... empat... empat pisang." },
+                { id: "5", visual: "⭐⭐⭐⭐⭐", text: "LIMA BINTANG", audioStr: "Satu... dua... tiga... empat... lima... lima bintang." },
+                { id: "6", visual: "🚗🚗🚗🚗🚗🚗", text: "ENAM KERETA", audioStr: "Satu... dua... tiga... empat... lima... enam... enam kereta." },
+                { id: "7", visual: "🐥🐥🐥🐥🐥🐥🐥", text: "TUJUH AYAM", audioStr: "Satu... dua... tiga... empat... lima... enam... tujuh... tujuh anak ayam." },
+                { id: "8", visual: "🐟🐟🐟🐟🐟🐟🐟🐟", text: "LAPAN IKAN", audioStr: "Satu... dua... tiga... empat... lima... enam... tujuh... lapan... lapan ikan." },
+                { id: "9", visual: "🎈🎈🎈🎈🎈🎈🎈🎈🎈", text: "SEMBILAN BELON", audioStr: "Satu... dua... tiga... empat... lima... enam... tujuh... lapan... sembilan... sembilan belon." },
+                { id: "10", visual: "⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐", text: "SEPULUH BINTANG", audioStr: "Satu... dua... tiga... empat... lima... enam... tujuh... lapan... sembilan... sepuluh... sepuluh bintang." }
             ],
             bentuk: [
                 { id: "🔴", visual: "🔴", text: "BULAT", audioStr: "Ini bulat." },
@@ -257,20 +241,20 @@
                 { id: "🥚", visual: "🥚", text: "OVAL", audioStr: "Ini oval." }
             ],
             warna: [
-                { id: "MERAH", visual: "🍎", text: "MERAH", audioStr: "Merah.", colorClass: "text-red-500" },
-                { id: "BIRU", visual: "⚽", text: "BIRU", audioStr: "Biru.", colorClass: "text-blue-500" },
-                { id: "KUNING", visual: "🍌", text: "KUNING", audioStr: "Kuning.", colorClass: "text-yellow-400" },
-                { id: "HIJAU", visual: "🥦", text: "HIJAU", audioStr: "Hijau.", colorClass: "text-green-500" },
-                { id: "OREN", visual: "🍊", text: "OREN", audioStr: "Oren.", colorClass: "text-orange-500" },
-                { id: "UNGU", visual: "🍇", text: "UNGU", audioStr: "Ungu.", colorClass: "text-purple-500" },
-                { id: "MERAH JAMBU", visual: "🦩", text: "MERAH JAMBU", audioStr: "Merah jambu.", colorClass: "text-pink-400" },
-                { id: "HITAM", visual: "🕶️", text: "HITAM", audioStr: "Hitam.", colorClass: "text-black" },
-                { id: "PUTIH", visual: "☁️", text: "PUTIH", audioStr: "Putih.", colorClass: "text-gray-400" }
+                { id: "MERAH", visual: "🍎", text: "MERAH", audioStr: "Merah.", cClass: "text-red-500" },
+                { id: "BIRU", visual: "⚽", text: "BIRU", audioStr: "Biru.", cClass: "text-blue-500" },
+                { id: "KUNING", visual: "🍌", text: "KUNING", audioStr: "Kuning.", cClass: "text-yellow-400" },
+                { id: "HIJAU", visual: "🥦", text: "HIJAU", audioStr: "Hijau.", cClass: "text-green-500" },
+                { id: "OREN", visual: "🍊", text: "OREN", audioStr: "Oren.", cClass: "text-orange-500" },
+                { id: "UNGU", visual: "🍇", text: "UNGU", audioStr: "Ungu.", cClass: "text-purple-500" },
+                { id: "MERAH JAMBU", visual: "🦩", text: "MERAH JAMBU", audioStr: "Merah jambu.", cClass: "text-pink-400" },
+                { id: "HITAM", visual: "🕶️", text: "HITAM", audioStr: "Hitam.", cClass: "text-black" },
+                { id: "PUTIH", visual: "☁️", text: "PUTIH", audioStr: "Putih.", cClass: "text-gray-400" }
             ]
         };
 
-        const senaraiPujian = ["Bagus!", "Hebat!", "Pandai!", "Syabas!"];
-        const warnaPujian = ["bg-green-500", "bg-pink-500", "bg-blue-500", "bg-purple-500"];
+        const listPujian = ["Bagus!", "Hebat!", "Pandai!", "Syabas!"];
+        const bgPujian = ["bg-green-500", "bg-pink-500", "bg-blue-500", "bg-purple-500"];
         
         let modulSemasa = "";
         let indeksSemasa = 0;
@@ -278,20 +262,107 @@
         let logTempatan = [];
         let gateSecret = { num1: 0, num2: 0, ans: 0 };
 
-        // PENGURUSAN HALAMAN / NAVIGATION INTERNA
+        // SISTEM ENJIN AUDIO (WEB AUDIO API)
+        let audioCtx = null;
+        let bgmInterval = null;
+        let muzikSedangMain = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // 1. Efek Bunyi Butang Dipop Kanak-kanak Ceria
+        function mainBunyiPop() {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.15);
+            
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        }
+
+        // 2. Muzik Latar Ceria (BGM) Automatik (Melodi Lembut Malar Berulang)
+        function mulaMuzikLatar() {
+            if (muzikSedangMain) return;
+            muzikSedangMain = true;
+            document.getElementById("btn-muzik").textContent = "⏸️ Henti Muzik";
+            
+            // Susunan Nota Lagu Ceria Ringkas Kanak-Kanak (C Major)
+            const melodi = [261.63, 293.66, 329.63, 349.23, 392.00, 349.23, 329.63, 293.66]; 
+            let langkah = 0;
+
+            bgmInterval = setInterval(() => {
+                if (!muzikSedangMain) return;
+                
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                
+                osc.type = 'triangle'; // Bunyi lembut seperti kotak muzik mainan
+                osc.frequency.setValueAtTime(melodi[langkah], audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.03, audioCtx.currentTime); // Sangat perlahan supaya tidak mengganggu suara ibu
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+                
+                langkah = (langkah + 1) % melodi.length;
+            }, 500);
+        }
+
+        function aktifkanAudioLatar() {
+            initAudio();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            // Automatik mulakan muzik pada klik skrin pertama jika belum berjalan
+            if (!bgmInterval && !muzikSedangMain) {
+                mulaMuzikLatar();
+            }
+        }
+
+        function tukarStatusMuzik(e) {
+            e.stopPropagation(); // Elak trigger klik body
+            initAudio();
+            if (muzikSedangMain) {
+                muzikSedangMain = false;
+                clearInterval(bgmInterval);
+                bgmInterval = null;
+                document.getElementById("btn-muzik").textContent = "🎵 Buka Muzik";
+            } else {
+                mulaMuzikLatar();
+            }
+        }
+
+        // PENGURUSAN HALAMAN
         function bukaHalaman(pageId) {
             document.getElementById("page-utama").classList.add("hidden");
             document.getElementById("page-belajar").classList.add("hidden");
             document.getElementById("page-permainan").classList.add("hidden");
             document.getElementById("page-ibubapa").classList.add("hidden");
-
             document.getElementById(`page-${pageId}`).classList.remove("hidden");
         }
 
         function mulaModul(namaModul) {
             modulSemasa = namaModul;
             indeksSemasa = 0;
-
             if (namaModul === 'main') {
                 janaPermainanBaru();
                 bukaHalaman("permainan");
@@ -301,51 +372,45 @@
             }
         }
 
-        // PEMBELAJARAN KAD KILAT (FLASHCARD)
         function kemaskiniKadPintar() {
             const item = dataModul[modulSemasa][indeksSemasa];
-            
             const headerTxt = document.getElementById("card-header-text");
             const visual = document.getElementById("card-visual");
             const footerTxt = document.getElementById("card-footer-text");
 
-            // Tetapan khusus mengikut jenis modul
+            visual.className = "text-9xl my-6 filter drop-shadow-sm animate__animated transition-transform duration-300";
+
             if (modulSemasa === "huruf") {
                 headerTxt.textContent = item.id;
-                headerTxt.className = "text-8xl font-black text-amber-500 my-2";
+                headerTxt.className = "text-8xl font-black text-red-400 my-2";
                 visual.textContent = item.visual;
                 footerTxt.textContent = item.text;
             } else if (modulSemasa === "nombor") {
                 headerTxt.textContent = item.id;
                 headerTxt.className = "text-8xl font-black text-blue-500 my-2";
                 visual.textContent = item.visual;
-                visual.className = "text-5xl my-6 tracking-wide break-words max-w-xs mx-auto animate__animated"; 
+                visual.className = "text-4xl my-8 tracking-wide break-words max-w-[280px] mx-auto animate__animated"; 
                 footerTxt.textContent = item.text;
             } else if (modulSemasa === "bentuk") {
                 headerTxt.textContent = "";
                 visual.textContent = item.visual;
-                visual.className = "text-9xl my-8 animate__animated";
+                visual.className = "text-9xl my-10 animate__animated";
                 footerTxt.textContent = item.text;
             } else if (modulSemasa === "warna") {
                 headerTxt.textContent = "⬤";
-                headerTxt.className = `text-8xl font-black ${item.colorClass} my-2`;
+                headerTxt.className = `text-8xl font-black ${item.cClass} my-2`;
                 visual.textContent = item.visual;
-                visual.className = "text-8xl my-4 animate__animated";
                 footerTxt.textContent = item.text;
             }
 
-            // Automatik sebut ketika kad bertukar
             sebutPerkataan(item.audioStr);
             rekodAktiviti(modulSemasa.toUpperCase(), item.text);
         }
 
         function navigasiItem(arah) {
             indeksSemasa += arah;
-            if (indeksSemasa < 0) {
-                indeksSemasa = dataModul[modulSemasa].length - 1;
-            } else if (indeksSemasa >= dataModul[modulSemasa].length) {
-                indeksSemasa = 0;
-            }
+            if (indeksSemasa < 0) indeksSemasa = dataModul[modulSemasa].length - 1;
+            else if (indeksSemasa >= dataModul[modulSemasa].length) indeksSemasa = 0;
             kemaskiniKadPintar();
         }
 
@@ -353,45 +418,48 @@
             const item = dataModul[modulSemasa][indeksSemasa];
             const elemVisual = document.getElementById("card-visual");
             
-            // Animasi visual melompat/bergerak lembut
             elemVisual.classList.add("animate__rubberBand");
             setTimeout(() => elemVisual.classList.remove("animate__rubberBand"), 800);
 
-            // Mainkan sebutan audio & cetus impak pujian ceria
+            mainBunyiPop();
             sebutPerkataan(item.audioStr);
-            setTimeout(() => {
-                pamerPujianCeria();
-            }, 1200);
+            
+            setTimeout(() => { pamerPujianCeria(); }, 1100);
         }
 
-        // ENGINE PERMAINAN RINGKAS ("PILIH YANG BETUL")
         function janaPermainanBaru() {
-            // Pilih sub-modul permainan secara rawak (Huruf, Nombor, Bentuk, Warna)
             const jenisKuiz = ["huruf", "nombor", "bentuk", "warna"][Math.floor(Math.random() * 4)];
             const senaraiData = dataModul[jenisKuiz];
             
-            // Pilih 2 item berbeza secara rawak
-            let indeks1 = Math.floor(Math.random() * senaraiData.length);
-            let indeks2 = Math.floor(Math.random() * senaraiData.length);
-            while (indeks1 === indeks2) {
-                indeks2 = Math.floor(Math.random() * senaraiData.length);
-            }
+            let idx1 = Math.floor(Math.random() * senaraiData.length);
+            let idx2 = Math.floor(Math.random() * senaraiData.length);
+            while (idx1 === idx2) { idx2 = Math.floor(Math.random() * senaraiData.length); }
 
-            const itemBetul = senaraiData[indeks1];
-            const itemSalah = senaraiData[indeks2];
-
+            const itemBetul = senaraiData[idx1];
+            const itemSalah = senaraiData[idx2];
             jawapanBetulPermainan = Math.random() < 0.5 ? 0 : 1;
 
             const instruksi = document.getElementById("game-instruction");
-            instruksi.textContent = `Mana ${itemBetul.text.toLowerCase()}?`;
-            sebutPerkataan(`Mana ${itemBetul.text.toLowerCase()}?`);
+            
+            if (jenisKuiz === "huruf") {
+                instruksi.textContent = `Mana huruf ${itemBetul.id}?`;
+                sebutPerkataan(`Mana huruf ${itemBetul.id}?`);
+            } else if (jenisKuiz === "nombor") {
+                instruksi.textContent = `Mana nombor ${itemBetul.id}?`;
+                sebutPerkataan(`Mana nombor ${itemBetul.id}?`);
+            } else if (jenisKuiz === "warna") {
+                instruksi.textContent = `Mana warna ${itemBetul.text.toLowerCase()}?`;
+                sebutPerkataan(`Mana warna ${itemBetul.text.toLowerCase()}?`);
+            } else {
+                instruksi.textContent = `Mana bentuk ${itemBetul.text.toLowerCase()}?`;
+                sebutPerkataan(`Mana bentuk ${itemBetul.text.toLowerCase()}?`);
+            }
 
             const btn0 = document.getElementById("btn-choice-0");
             const btn1 = document.getElementById("btn-choice-1");
             
-            // Reset gaya sempadan butang pilihan
-            btn0.className = "card-pop bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200 flex flex-col items-center flex-1 min-h-[180px] justify-center";
-            btn1.className = "card-pop bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200 flex flex-col items-center flex-1 min-h-[180px] justify-center";
+            btn0.className = "card-pop bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200 flex flex-col items-center flex-1 min-h-[190px] justify-center";
+            btn1.className = "card-pop bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200 flex flex-col items-center flex-1 min-h-[190px] justify-center";
 
             if (jawapanBetulPermainan === 0) {
                 sediakanButangPilihan(0, itemBetul, jenisKuiz);
@@ -406,18 +474,14 @@
             const valElem = document.getElementById(`choice-val-${idButang}`);
             const lblElem = document.getElementById(`choice-lbl-${idButang}`);
 
-            if (jenis === "huruf" || jenis === "warna") {
-                valElem.textContent = item.visual;
-                lblElem.textContent = item.text;
-            } else if (jenis === "nombor") {
+            if (jenis === "huruf" || jenis === "nombor") {
                 valElem.textContent = item.id;
-                lblElem.textContent = "KIRA";
-            } else if (jenis === "bentuk") {
+                lblElem.textContent = item.text.split(" ")[0]; 
+            } else {
                 valElem.textContent = item.visual;
                 lblElem.textContent = item.text;
             }
-            // Simpan rujukan teks tersembunyi untuk semakan suara santai
-            valElem.setAttribute("data-nama", item.text);
+            valElem.setAttribute("data-nama", item.text.split(" ")[0]);
         }
 
         function semakJawapan(idDipilih) {
@@ -425,122 +489,99 @@
             const namaObjek = document.getElementById(`choice-val-${idDipilih}`).getAttribute("data-nama");
 
             if (idDipilih === jawapanBetulPermainan) {
-                btnTerpilih.classList.remove("border-gray-200");
                 btnTerpilih.classList.add("border-green-400", "bg-green-50");
-                
-                sebutPerkataan(`Bagus! ${namaObjek.toLowerCase()}!`);
+                sebutPerkataan(`Bagus! Betul!`);
                 pamerPujianCeria();
-                rekodAktiviti("PERMAINAN", `Betul meneka ${namaObjek}`);
-                
-                setTimeout(() => {
-                    janaPermainanBaru();
-                }, 2000);
+                rekokAktiviti(namaObjek);
+                setTimeout(() => { janaPermainanBaru(); }, 2000);
             } else {
-                btnTerpilih.classList.remove("border-gray-200");
                 btnTerpilih.classList.add("border-amber-300", "animate__animated", "animate__headShake");
-                
                 sebutPerkataan("Cuba lagi sayang.");
-                setTimeout(() => {
-                    btnTerpilih.classList.remove("animate__animated", "animate__headShake");
-                }, 800);
+                setTimeout(() => { btnTerpilih.classList.remove("animate__animated", "animate__headShake"); }, 800);
             }
         }
 
-        // SISTEM PUJIAN VISUAL + PENGULANGAN ELEMEN
+        function rekokAktiviti(namaObjek){
+             rekodAktiviti("PERMAINAN", `Berjaya meneka ${namaObjek}`);
+        }
+
         function pamerPujianCeria() {
-            const indexRawak = Math.floor(Math.random() * senaraiPujian.length);
-            const teksPujian = senaraiPujian[indexRawak];
-            const warnaRawak = warnaPujian[indexRawak];
+            const idx = Math.floor(Math.random() * listPujian.length);
+            const teks = listPujian[idx];
+            const warna = bgPujian[idx];
 
             const overlay = document.getElementById("praise-overlay");
             const textContainer = document.getElementById("praise-text");
 
-            textContainer.textContent = teksPujian;
-            overlay.className = `fixed inset-0 pointer-events-none z-50 flex items-center justify-center ${warnaRawak} bg-opacity-80`;
+            textContainer.textContent = teks;
+            overlay.className = `fixed inset-0 pointer-events-none z-50 flex items-center justify-center ${warna} bg-opacity-85`;
             overlay.classList.remove("hidden");
-            
             textContainer.className = "text-6xl md:text-8xl font-bold text-white drop-shadow-md animate__animated animate__jackInTheBox";
 
-            // Sebut kata pujian bersahaja
-            sebutPerkataan(teksPujian);
+            sebutPerkataan(teks);
 
             setTimeout(() => {
                 textContainer.className = "text-6xl md:text-8xl font-bold text-white drop-shadow-md animate__animated animate__zoomOut";
-                setTimeout(() => {
-                    overlay.classList.add("hidden");
-                }, 500);
+                setTimeout(() => { overlay.classList.add("hidden"); }, 400);
             }, 1000);
         }
 
-        // SISTEM SINTESIS SUARA (AUDIO SEBUTAN MALAYSIA SANTAI)
         function sebutPerkataan(teks) {
             if ('speechSynthesis' in window) {
-                // Hentikan sebutan sedia ada bagi mengelakkan pertindihan tindak balas pantas kanak-kanak
                 window.speechSynthesis.cancel();
-                
                 const sebutan = new SpeechSynthesisUtterance(teks);
-                sebutan.lang = 'ms-MY'; // Set Bahasa Malaysia
-                sebutan.rate = 0.75;    // Kadar sebutan santai & perlahan
-                sebutan.pitch = 1.3;    // Nada lebih ceria mirip keibuan
-                
+                sebutan.lang = 'ms-MY';
+                sebutan.rate = 0.72;
+                sebutan.pitch = 1.35;
                 window.speechSynthesis.speak(sebutan);
             }
         }
 
-        // KAWALAN KESELAMATAN & DASHBOARD IBU BAPA
-        function bukaModulIbuBapa() {
-            // Bina soalan matematik rawak untuk mengelak kanak-kanak tertekan sengaja
-            gateSecret.num1 = Math.floor(Math.random() * 10) + 2;
-            gateSecret.num2 = Math.floor(Math.random() * 9) + 1;
-            gateSecret.ans = gateSecret.num1 + gateSecret.num2;
-
-            document.getElementById("gate-question").textContent = `${gateSecret.num1} + ${gateSecret.num2} = ?`;
-            document.getElementById("gate-answer").value = "";
-            
-            document.getElementById("parent-gate").classList.remove("hidden");
-            document.getElementById("parent-dashboard").classList.add("hidden");
-            
-            bukaHalaman("ibubapa");
-        }
-
         function sahkanGateParent() {
-            const inputAns = parseInt(document.getElementById("gate-answer").value);
-            if (inputAns === gateSecret.ans) {
+            const ansInput = parseInt(document.getElementById("gate-answer").value);
+            if (ansInput === gateSecret.ans) {
                 document.getElementById("parent-gate").classList.add("hidden");
                 document.getElementById("parent-dashboard").classList.remove("hidden");
                 paparkanLogDashboard();
             } else {
-                alert("Jawapan kurang tepat. Sila cuba lagi untuk pengesahan dewasa.");
+                alert("Jawapan salah. Sila cuba lagi.");
             }
         }
 
-        function rekodAktiviti(modul, namaItem) {
-            const masaKini = new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit', second:'2-digit' });
-            const logItem = `[${masaKini}] Melawat Modul ${modul}: Mengenal "${namaItem}"`;
-            
-            // Simpan rekod ke senarai log tempatan (Local State)
-            logTempatan.unshift(logItem);
+        function bukaModulIbuBapa() {
+            gateSecret.num1 = Math.floor(Math.random() * 8) + 3;
+            gateSecret.num2 = Math.floor(Math.random() * 7) + 2;
+            gateSecret.ans = gateSecret.num1 + gateSecret.num2;
+            document.getElementById("gate-question").textContent = `${gateSecret.num1} + ${gateSecret.num2} = ?`;
+            document.getElementById("gate-answer").value = "";
+            document.getElementById("parent-gate").classList.remove("hidden");
+            document.getElementById("parent-dashboard").classList.add("hidden");
+            bukaHalaman("ibubapa");
+        }
 
-            // Hantar log data ke Firebase jika sambungan sedia ada
+        function rekodAktiviti(modul, namaItem) {
+            const waktu = new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit', second:'2-digit' });
+            const ayatLog = `[${waktu}] Modul ${modul}: Belajar "${namaItem}"`;
+            logTempatan.unshift(ayatLog);
+            document.getElementById("stat-total-klik").textContent = logTempatan.length;
+
             if (typeof window.logActivityToFirebase === "function") {
                 window.logActivityToFirebase(modul, namaItem);
             }
         }
 
         function paparkanLogDashboard() {
-            const bekasLog = document.getElementById("parent-logs-list");
-            bekasLog.innerHTML = "";
-            
+            const listElem = document.getElementById("parent-logs-list");
+            listElem.innerHTML = "";
             if (logTempatan.length === 0) {
-                bekasLog.innerHTML = `<p class="text-gray-400 italic text-center py-4">Belum ada aktiviti direkodkan lagi. Jom mula belajar!</p>`;
+                listElem.innerHTML = `<p class="text-gray-400 italic text-center py-4">Belum ada data.</p>`;
                 return;
             }
-
             logTempatan.forEach(log => {
-                const div = document.createElement("div");
-                div.className = "p-2 bg-purple-50 rounded-lg border-l-4 border-purple-500 text-gray-700 font-medium shadow-sm";
-                div.textContent = log;
-                bekasLog.appendChild(div);
+                const itemDiv = document.createElement("div");
+                itemDiv.className = "p-2 bg-purple-50 rounded-lg border-l-4 border-purple-500 text-gray-700 font-medium my-1";
+                itemDiv.textContent = log;
+                listElem.appendChild(itemDiv);
             });
         }
     </script>
