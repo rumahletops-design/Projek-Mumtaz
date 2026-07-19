@@ -147,6 +147,14 @@
 
         <!-- MODUL PERMAINAN: PILIH YANG BETUL -->
         <div id="page-permainan" class="w-full hidden text-center space-y-6 animate__animated animate__fadeIn">
+            <!-- PAPARAN PEMARKAHAN BINTANG CERIA -->
+            <div class="flex justify-center pb-2">
+                <div id="score-container" class="bg-yellow-100 border-2 border-yellow-300 rounded-full px-6 py-2 shadow-inner text-yellow-700 font-bold text-xl flex items-center space-x-2 animate__animated">
+                    <span>⭐ Markah:</span>
+                    <span id="game-score">0</span>
+                </div>
+            </div>
+
             <h2 id="game-instruction" class="text-3xl font-bold text-purple-700 bg-purple-100 py-3 px-8 rounded-full inline-block shadow-inner">Mana bola?</h2>
             
             <div class="flex justify-center items-center gap-6 max-w-md mx-auto pt-6">
@@ -179,6 +187,7 @@
                 </div>
                 <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded-lg space-y-1">
                     <div>🎯 <b>Jumlah Klik Dipelajari:</b> <span id="stat-total-klik">0</span> kali</div>
+                    <div>🏆 <b>Skor Tertinggi Permainan:</b> <span id="stat-high-score">0</span></div>
                 </div>
                 <div class="space-y-2 max-h-52 overflow-y-auto text-xs" id="parent-logs-list"></div>
             </div>
@@ -261,8 +270,12 @@
         let jawapanBetulPermainan = 0;
         let logTempatan = [];
         let gateSecret = { num1: 0, num2: 0, ans: 0 };
+        
+        // VARIABEL SKOR KANAK-KANAK
+        let skorSemasa = 0;
+        let skorTertinggi = 0;
 
-        // SISTEM ENJIN AUDIO (WEB AUDIO API)
+        // SISTEM AUDIO (WEB AUDIO API - LALUAN BERTERUSAN BERULANG)
         let audioCtx = null;
         let bgmInterval = null;
         let muzikSedangMain = false;
@@ -273,7 +286,6 @@
             }
         }
 
-        // 1. Efek Bunyi Butang Dipop Kanak-kanak Ceria
         function mainBunyiPop() {
             initAudio();
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -295,13 +307,13 @@
             osc.stop(audioCtx.currentTime + 0.15);
         }
 
-        // 2. Muzik Latar Ceria (BGM) Automatik (Melodi Lembut Malar Berulang)
+        // Muzik Latar Belakang (Malar & Autoplay Berterusan sepanjang penggunaan)
         function mulaMuzikLatar() {
             if (muzikSedangMain) return;
             muzikSedangMain = true;
             document.getElementById("btn-muzik").textContent = "⏸️ Henti Muzik";
             
-            // Susunan Nota Lagu Ceria Ringkas Kanak-Kanak (C Major)
+            // Urutan nota melodi mesra kanak-kanak
             const melodi = [261.63, 293.66, 329.63, 349.23, 392.00, 349.23, 329.63, 293.66]; 
             let langkah = 0;
 
@@ -311,20 +323,20 @@
                 let osc = audioCtx.createOscillator();
                 let gain = audioCtx.createGain();
                 
-                osc.type = 'triangle'; // Bunyi lembut seperti kotak muzik mainan
+                osc.type = 'triangle'; 
                 osc.frequency.setValueAtTime(melodi[langkah], audioCtx.currentTime);
                 
-                gain.gain.setValueAtTime(0.03, audioCtx.currentTime); // Sangat perlahan supaya tidak mengganggu suara ibu
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.025, audioCtx.currentTime); // Lembut di latar belakang
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
                 
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.4);
+                osc.stop(audioCtx.currentTime + 0.45);
                 
                 langkah = (langkah + 1) % melodi.length;
-            }, 500);
+            }, 550); // Selang masa berterusan malar sepanjang aplikasi aktif
         }
 
         function aktifkanAudioLatar() {
@@ -332,14 +344,13 @@
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            // Automatik mulakan muzik pada klik skrin pertama jika belum berjalan
             if (!bgmInterval && !muzikSedangMain) {
                 mulaMuzikLatar();
             }
         }
 
         function tukarStatusMuzik(e) {
-            e.stopPropagation(); // Elak trigger klik body
+            e.stopPropagation(); 
             initAudio();
             if (muzikSedangMain) {
                 muzikSedangMain = false;
@@ -364,6 +375,8 @@
             modulSemasa = namaModul;
             indeksSemasa = 0;
             if (namaModul === 'main') {
+                skorSemasa = 0; // Reset markah setiap kali permainan baru bermula
+                kemaskiniPaparanSkor();
                 janaPermainanBaru();
                 bukaHalaman("permainan");
             } else {
@@ -490,9 +503,18 @@
 
             if (idDipilih === jawapanBetulPermainan) {
                 btnTerpilih.classList.add("border-green-400", "bg-green-50");
+                
+                // Tambah Markah & Cetus Animasi
+                skorSemasa += 1;
+                if(skorSemasa > skorTertinggi) {
+                    skorTertinggi = skorSemasa;
+                    document.getElementById("stat-high-score").textContent = skorTertinggi;
+                }
+                kemaskiniPaparanSkor();
+
                 sebutPerkataan(`Bagus! Betul!`);
                 pamerPujianCeria();
-                rekokAktiviti(namaObjek);
+                rekodAktiviti("PERMAINAN", `Berjaya meneka ${namaObjek}`);
                 setTimeout(() => { janaPermainanBaru(); }, 2000);
             } else {
                 btnTerpilih.classList.add("border-amber-300", "animate__animated", "animate__headShake");
@@ -501,8 +523,13 @@
             }
         }
 
-        function rekokAktiviti(namaObjek){
-             rekodAktiviti("PERMAINAN", `Berjaya meneka ${namaObjek}`);
+        function kemaskiniPaparanSkor() {
+            const scoreContainer = document.getElementById("score-container");
+            document.getElementById("game-score").textContent = skorSemasa;
+            
+            // Animasi denyutan bintang membesar apabila markah naik
+            scoreContainer.classList.add("animate__pulse");
+            setTimeout(() => scoreContainer.classList.remove("animate__pulse"), 500);
         }
 
         function pamerPujianCeria() {
