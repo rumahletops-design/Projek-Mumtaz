@@ -130,7 +130,7 @@
             cursor: pointer;
         }
 
-        /* Struktur Reka Bentuk Modul */
+        /* Modul Pembelajaran */
         .header-modul {
             display: flex;
             justify-content: space-between;
@@ -301,7 +301,7 @@
         </div>
     </div>
 
-    <!-- SKRIN MODUL PEMBELAJARAN (KONGSI STRUKTUR) -->
+    <!-- SKRIN MODUL PEMBELAJARAN -->
     <div id="skrin-belajar" class="skrin">
         <div class="header-modul">
             <button class="btn-kembali" onclick="kembaliUtama()">🏠</button>
@@ -395,7 +395,6 @@
 </script>
 
 <script>
-    // DATA DATA MODUL
     const dataHuruf = [
         {h:"A", v:"🐔", p:"AYAM"}, {h:"B", v:"⚽", p:"BOLA"}, {h:"C", v:"🌶️", p:"CILI"},
         {h:"D", v:"🪙", p:"DUIT"}, {h:"E", v:"🍎", p:"EPAL"}, {h:"F", v:"📸", p:"FOTO"},
@@ -427,26 +426,26 @@
         {h:"🌸", v:"🎀", p:"MERAH JAMBU"}, {h:"⚫", v:"🕶️", p:"HITAM"}, {h:"⚪", v:"🥛", p:"PUTIH"}
     ];
 
-    const pujianIbu = ["Wah, pandainya anak ibu!", "Comelnya! Hebat sangat!", "Yeay, bijaknya dia!", "Syarif! Terbaik sayang!"];
+    const pujianIbu = ["Wah, pandainya anak ibu!", "Comelnya! Hebat sangat!", "Yeay, bijaknya dia!", "Terbaik sayang!"];
 
     let modulSemasa = '';
     let indeksSemasa = 0;
     let dataSemasa = [];
     let dipelajari = { huruf: new Set(), nombor: new Set(), bentuk: new Set(), warna: new Set() };
 
-    // FUNGSI SUARA IBU (NADA PEREMPUAN CERIA & SPONTAN)
+    // FUNGSI SUARA PEREMPUAN (NADA IBU CERIA & SANTAI)
     function sebut(teks) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             let ucapan = new SpeechSynthesisUtterance(teks);
             ucapan.lang = 'ms-MY';
-            ucapan.rate = 0.85;  // Kelajuan santai
-            ucapan.pitch = 1.45; // Nada tinggi & ceria menyerupai suara wanita/ibu
+            ucapan.rate = 0.85;  
+            ucapan.pitch = 1.45; // Suara bernada tinggi, mesra dan ceria
             window.speechSynthesis.speak(ucapan);
         }
     }
 
-    // BUNYI KESAN KHAS (UNTUK PERMAINAN - TANPA PERKATAAN)
+    // EFEK BUNYI SINTETIK SAHAJA (UNTUK MAINAN - TANPA SUARA CAKAP)
     function mainBunyi(jenis) {
         if (!window.AudioContext && !window.webkitAudioContext) return;
         let ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -457,7 +456,6 @@
         gain.connect(ctx.destination);
         
         if (jenis === 'betul') {
-            // Bunyi "ting-ting!" gembira
             osc.type = 'sine';
             osc.frequency.setValueAtTime(400, ctx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.3);
@@ -466,14 +464,13 @@
             osc.start();
             osc.stop(ctx.currentTime + 0.3);
         } else if (jenis === 'salah') {
-            // Bunyi "womp-womp" lembut
             osc.type = 'triangle';
-            osc.frequency.setValueAtTime(250, ctx.currentTime);
-            osc.frequency.linearRampToValueAtTime(150, ctx.currentTime + 0.2);
+            osc.frequency.setValueAtTime(260, ctx.currentTime);
+            osc.frequency.linearRampToValueAtTime(140, ctx.currentTime + 0.25);
             gain.gain.setValueAtTime(0.3, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.2);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.25);
             osc.start();
-            osc.stop(ctx.currentTime + 0.2);
+            osc.stop(ctx.currentTime + 0.25);
         }
     }
 
@@ -509,14 +506,12 @@
         if (modulSemasa === 'huruf' || modulSemasa === 'nombor') {
             document.getElementById('txt-besar').innerText = item.h;
             document.getElementById('txt-besar').style.display = 'block';
-            document.getElementById('visual-besar').innerText = item.v;
-            document.getElementById('txt-mudah').innerText = item.p;
         } else {
             document.getElementById('txt-besar').style.display = 'none';
-            document.getElementById('visual-besar').innerText = item.v;
-            document.getElementById('txt-mudah').innerText = item.p;
         }
-
+        
+        document.getElementById('visual-besar').innerText = item.v;
+        document.getElementById('txt-mudah').innerText = item.p;
         document.getElementById('pujian-belajar').style.visibility = 'hidden';
         ulangAudio();
     }
@@ -528,10 +523,10 @@
         kemaskiniKad();
     }
 
+    // TERUS SEBUT PERKATAN PENH (TANPA MENGEJA)
     function ulangAudio() {
         if (!dataSemasa[indeksSemasa]) return;
         let item = dataSemasa[indeksSemasa];
-        // Terus sebut perkataan penuh dengan spontan & ceria
         sebut(item.p);
     }
 
@@ -544,7 +539,7 @@
         visualBesar.classList.add('lompat');
         
         let pujian = pujianIbu[Math.floor(Math.random() * pujianIbu.length)];
-        pujianBox.innerText = pujian.toUpperCase();
+        document.getElementById('pujian-belajar').innerText = pujian.toUpperCase();
         pujianBox.style.visibility = 'visible';
 
         sebut(pujian);
@@ -555,7 +550,7 @@
         }, 300);
     }
 
-    // PERMAINAN (MENGGUNAKAN BUNYI SAHAJA)
+    // PERMAINAN (HANYA EFEK BUNYI SAHAJA)
     let jawapanBetulIndeks = 0;
 
     function binaPermainan() {
@@ -578,9 +573,7 @@
         jawapanBetulIndeks = Math.floor(Math.random() * 2);
         let dataSoalanSemasa = jawapanBetulIndeks === 0 ? item1 : item2;
 
-        // Tukar teks soalan kepada sasaran visual objek
         document.getElementById('soalan-teks').innerText = "Cari gambar: " + dataSoalanSemasa.v;
-
         document.getElementById('pilihan-1').innerText = item1.v;
         document.getElementById('pilihan-2').innerText = item2.v;
     }
@@ -590,7 +583,7 @@
         let kadDipilih = document.getElementById(`pilihan-${indeksDipilih + 1}`);
 
         if (indeksDipilih === jawapanBetulIndeks) {
-            mainBunyi('betul'); // Mainkan kesan bunyi ceria sahaja
+            mainBunyi('betul'); // Efek bunyi jawapan betul
             pujianBox.innerText = "HEBAT!";
             pujianBox.style.visibility = 'visible';
             
@@ -600,7 +593,7 @@
                 binaPermainan();
             }, 1000);
         } else {
-            mainBunyi('salah'); // Mainkan kesan bunyi salah sahaja
+            mainBunyi('salah'); // Efek bunyi jawapan salah
             pujianBox.innerText = "CUBA LAGI";
             pujianBox.style.visibility = 'visible';
             kadDipilih.classList.add('goyang');
