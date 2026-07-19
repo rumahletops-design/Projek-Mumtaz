@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mumtaz Edukids</title>
+    <style>
+        :root {
+            --warna-pink: #FF6B6B;
+            --warna-biru: #4D96FF;
+            --warna-hijau: #6BCB77;
+            --warna-kuning: #FFD93D;
+            --warna-ungu: #9B5DE5;
+            --warna-latar: #F7F9FC;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Bubbler One', sans-serif;
+            background-color: var(--warna-latar);
+            color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background: white;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .skrin {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .skrin.aktif {
+            display: flex;
+        }
+
+        /* Halaman Utama */
+        #halaman-utama {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #FFF5E4, #FFE3E3);
+        }
+
+        .logo-box h1 {
+            font-size: 2.5rem;
+            color: var(--warna-pink);
+            text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.1);
+            margin-bottom: 5px;
+        }
+
+        .logo-box p {
+            font-size: 1.2rem;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .btn-menu {
+            border: none;
+            border-bottom: 6px solid rgba(0,0,0,0.15);
+            border-radius: 20px;
+            padding: 20px 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-menu:active {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+
+        .btn-huruf { background-color: var(--warna-pink); }
+        .btn-nombor { background-color: var(--warna-biru); }
+        .btn-bentuk { background-color: var(--warna-hijau); }
+        .btn-warna { background-color: var(--warna-kuning); color: #333; }
+        .btn-main { background-color: var(--warna-ungu); grid-column: span 2; }
+
+        .btn-ibu-bapa {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #eee;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Struktur Reka Bentuk Modul */
+        .header-modul {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .btn-kembali {
+            background: #eee;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .btn-audio-ulang {
+            background: #FFF5E4;
+            border: 3px solid var(--warna-kuning);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .kandungan-kad {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .elemen-besar {
+            font-size: 5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .visual-besar {
+            font-size: 7rem;
+            margin: 15px 0;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .perkataan-mudah {
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        .pujian-box {
+            height: 50px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--warna-hijau);
+            text-align: center;
+            visibility: hidden;
+            animation: pulse 0.5s infinite alternative;
+        }
+
+        .navigasi-bawah {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            padding: 0 20px;
+        }
+
+        .btn-nav {
+            background: #eee;
+            border: none;
+            border-radius: 15px;
+            padding: 10px 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Permainan */
+        .soalan-box {
+            font-size: 1.6rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pilihan-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .kad-pilihan {
+            background: #f0f0f0;
+            border: 4px solid #ddd;
+            border-radius: 20px;
+            width: 140px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .kad-pilihan span {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Ibu Bapa */
+        .parent-content {
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 5px;
+        }
+
+        .parent-content h2 { margin-bottom: 15px; color: var(--warna-ungu); }
+        .parent-card {
+            background: #f9f9f9;
+            border-left: 5px solid var(--warna-ungu);
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* Animasi */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        .lompat { transform: scale(1.2) rotate(5deg); }
+        .goyang { animation: shake 0.3s ease-in-out; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+
+    <!-- HALAMAN UTAMA -->
+    <div id="halaman-utama" class="skrin aktif">
+        <button class="btn-ibu-bapa" onclick="bukaIbuBapa()">⚙️</button>
+        <div class="logo-box">
+            <h1>Mumtaz Edukids</h1>
+            <p>"Belajar, Kenal dan Ceria!"</p>
+        </div>
+        <div class="menu-grid">
+            <button class="btn-menu btn-huruf" onclick="bukaModul('huruf')"><span>🔤</span>HURUF</button>
+            <button class="btn-menu btn-nombor" onclick="bukaModul('nombor')"><span>🔢</span>NOMBOR</button>
+            <button class="btn-menu btn-bentuk" onclick="bukaModul('bentuk')"><span>🔷</span>BENTUK</button>
+            <button class="btn-menu btn-warna" onclick="bukaModul('warna')"><span>🎨</span>WARNA</button>
+            <button class="btn-menu btn-main" onclick="bukaModul('main')"><span>🎮</span>MAIN</button>
+        </div>
+    </div>
+
+    <!-- SKRIN MODUL PEMBELAJARAN (KONGSI STRUKTUR) -->
+    <div id="skrin-belajar" class="skrin">
+        <div class="header-modul">
+            <button class="btn-kembali" onclick="kembaliUtama()">🏠</button>
+            <button class="btn-audio-ulang" onclick="ulangAudio semasa()">🔊</button>
+        </div>
+        <div class="kandungan-kad" onclick="sentuhKad()">
+            <div id="txt-besar" class="elemen-besar">A</div>
+            <div id="visual-besar" class="visual-besar">🐔</div>
+            <div id="txt-mudah" class="perkataan-mudah">AYAM</div>
+        </div>
+        <div id="pujian-belajar" class="pujian-box">BAGUS!</div>
+        <div class="navigasi-bawah">
+            <button class="btn-nav" onclick="navKad(-1)">←</button>
+            <button class="btn-nav" onclick="navKad(1)">→</button>
+        </div>
+    </div>
+
+    <!-- SKRIN PERMAINAN -->
+    <div id="skrin-permainan" class="skrin">
+        <div class="header-modul">
+            <button class="btn-kembali" onclick="kembaliUtama()">🏠</button>
+            <div id="pujian-main" class="pujian-box">HEBAT!</div>
+        </div>
+        <div id="soalan-teks" class="soalan-box">Mana bola?</div>
+        <div class="pilihan-container">
+            <div id="pilihan-1" class="kad-pilihan" onclick="semakJawapan(0)">⚽</div>
+            <div id="pilihan-2" class="kad-pilihan" onclick="semakJawapan(1)">🍎</div>
+        </div>
+    </div>
+
+    <!-- SKRIN IBU BAPA -->
+    <div id="skrin-ibu-bapa" class="skrin">
+        <div class="header-modul">
+            <button class="btn-kembali" onclick="kembaliUtama()">🏠</button>
+            <h3>Modul Ibu Bapa</h3>
+        </div>
+        <div class="parent-content">
+            <div class="parent-card">
+                <h4>⏱️ Tempoh Penggunaan</h4>
+                <p id="parent-masa">Mengira...</p>
+            </div>
+            <div class="parent-card">
+                <h4>🔤 Kad Huruf Dilihat</h4>
+                <p id="parent-huruf">0 daripada 26</p>
+            </div>
+            <div class="parent-card">
+                <h4>🔢 Nombor Dipelajari</h4>
+                <p id="parent-nombor">0 daripada 10</p>
+            </div>
+            <div class="parent-card">
+                <h4>🔷 Bentuk Dilihat</h4>
+                <p id="parent-bentuk">0 daripada 6</p>
+            </div>
+            <div class="parent-card">
+                <h4>🎨 Warna Dilihat</h4>
+                <p id="parent-warna">0 daripada 9</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- INTEGRASI FIREBASE & LOGIK APLIKASI -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCo_88Uwl-E7-C0Z0por2Agv-plToDlEgk",
+        authDomain: "projek-mumtaz.firebaseapp.com",
+        databaseURL: "https://projek-mumtaz-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "projek-mumtaz",
+        storageBucket: "projek-mumtaz.firebasestorage.app",
+        messagingSenderId: "448069580212",
+        appId: "1:448069580212:web:c6faf46d39ed1ee61e6ee1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Tempoh penggunaan tempatan
+    let masaMula = Date.now();
+    setInterval(() => {
+        let minit = Math.floor((Date.now() - masaMula) / 60000);
+        document.getElementById('parent-masa').innerText = minit + " Minit";
+        // Hantar perkembangan masa aktif ke Firebase secara berkala
+        set(ref(db, 'prestasi/tempoh_minit'), minit);
+    }, 10000);
+
+    window.rekodKemajuanFirebase = function(kategori) {
+        set(ref(db, `prestasi/klik_${kategori}`), increment(1));
+    }
+</script>
+
+<script>
+    // DATA DATA MODUL
+    const dataHuruf = [
+        {h:"A", v:"🐔", p:"AYAM"}, {h:"B", v:"⚽", p:"BOLA"}, {h:"C", v:"🌶️", p:"CILI"},
+        {h:"D", v:"🪙", p:"DUIT"}, {h:"E", v:"🍎", p:"EPAL"}, {h:"F", v:"📸", p:"FOTO"},
+        {h:"G", v:"🐘", p:"GAJAH"}, {h:"H", v:"💖", p:"HATI"}, {h:"I", v:"🐟", p:"IKAN"},
+        {h:"J", v:"⏰", p:"JAM"}, {h:"K", v:"🐱", p:"KUCING"}, {h:"L", v:"🚛", p:"LORI"},
+        {h:"M", v:"👁️", p:"MATA"}, {h:"N", v:"🍚", p:"NASI"}, {h:"O", v:"🍊", p:"OREN"},
+        {h:"P", v:"🍌", p:"PISANG"}, {h:"Q", v:"📖", p:"QURAN"}, {h:"R", v:"🏠", p:"RUMAH"},
+        {h:"S", v:"🥛", p:"SUSU"}, {h:"T", v:"👒", p:"TOPI"}, {h:"U", v:"🦐", p:"UDANG"},
+        {h:"V", v:"🚐", p:"VAN"}, {h:"W", v:"💵", p:"WANG"}, {h:"X", v:"🪘", p:"XILOFON"},
+        {h:"Y", v:"🪀", p:"YOYO"}, {h:"Z", v:"🦓", p:"ZEBRA"}
+    ];
+
+    const dataNombor = [
+        {h:"1", v:"⚽", p:"SATU BOLA"}, {h:"2", v:"⚽⚽", p:"DUA BOLA"}, {h:"3", v:"🍎🍎🍎", p:"TIGA EPAL"},
+        {h:"4", v:"🍌🍌🍌🍌", p:"EMPAT PISANG"}, {h:"5", v:"⭐⭐⭐⭐⭐", p:"LIMA BINTANG"}, 
+        {h:"6", v:"🚗🚗🚗🚗🚗🚗", p:"ENAM KERETA"}, {h:"7", v:"🐥🐥🐥🐥🐥🐥🐥", p:"TUJUH ANAK AYAM"},
+        {h:"8", v:"🐟🐟🐟🐟🐟🐟🐟🐟", p:"LAPAN IKAN"}, {h:"9", v:"🎈🎈🎈🎈🎈🎈🎈🎈🎈", p:"SEMBILAN BELON"},
+        {h:"10", v:"⚽⚽⚽⚽⚽⚽⚽⚽⚽⚽", p:"SEPULUH BOLA"}
+    ];
+
+    const dataBentuk = [
+        {h:"⚪", v:"⭕", p:"BULAT"}, {h:"🟥", v:"⏹️", p:"SEGI EMPAT"}, {h:"🔺", v:"📐", p:"SEGI TIGA"},
+        {h:"⭐", v:"🌟", p:"BINTANG"}, {h:"💖", v:"💝", p:"HATI"}, {h:"🥚", v:"⬭", p:"OVAL"}
+    ];
+
+    const dataWarna = [
+        {h:"🔴", v:"🍎", p:"MERAH"}, {h:"🔵", v:"⚽", p:"BIRU"}, {h:"🟡", v:"🍌", p:"KUNING"},
+        {h:"🟢", v:"🍃", p:"HIJAU"}, {h:"🟠", v:"🍊", p:"OREN"}, {h:"🟣", v:"🍇", p:"UNGU"},
+        {h:"🌸", v:"🎀", p:"MERAH JAMBU"}, {h:"⚫", v:"🕶️", p:"HITAM"}, {h:"⚪", v:"🥛", p:"PUTIH"}
+    ];
+
+    const pujianPositif = ["Bagus!", "Hebat!", "Pandai!", "Syabas!"];
+
+    let modulSemasa = '';
+    let indeksSemasa = 0;
+    let dataSemasa = [];
+    
+    // Penjejak unik tempatan untuk Modul Ibu Bapa
+    let dipelajari = { huruf: new Set(), nombor: new Set(), bentuk: new Set(), warna: new Set() };
+
+    // FUNGSI SUARA (TEXT TO SPEECH)
+    function sebut(teks) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            let ucapan = new SpeechSynthesisUtterance(teks);
+            ucapan.lang = 'ms-MY'; // Set Bahasa Malaysia
+            ucapan.rate = 0.75;    // Diperlahankan sedikit untuk kanak-kanak 1-2 tahun
+            ucapan.pitch = 1.3;   // Nada suara diceriakan
+            window.speechSynthesis.speak(ucapan);
+        }
+    }
+
+    // NAVIGASI SKRIN
+    function tukarSkrin(idSkrin) {
+        document.querySelectorAll('.skrin').forEach(s => s.classList.remove('aktif'));
+        document.getElementById(idSkrin).classList.add('aktif');
+    }
+
+    function kembaliUtama() {
+        tukarSkrin('halaman-utama');
+    }
+
+    function bukaModul(jenis) {
+        modulSemasa = jenis;
+        indeksSemasa = 0;
+        
+        if (jenis === 'huruf') dataSemasa = dataHuruf;
+        else if (jenis === 'nombor') dataSemasa = dataNombor;
+        else if (jenis === 'bentuk') dataSemasa = dataBentuk;
+        else if (jenis === 'warna') dataSemasa = dataWarna;
+        else if (jenis === 'main') { binaPermainan(); return; }
+
+        kemaskiniKad();
+        tukarSkrin('skrin-belajar');
+    }
+
+    function kemaskiniKad() {
+        let item = dataSemasa[indeksSemasa];
+        
+        // Rekod kemajuan
+        dipelajari[modulSemasa].add(indeksSemasa);
+        if(window.rekodKemajuanFirebase) window.rekodKemajuanFirebase(modulSemasa);
+
+        // Kawalan visual mengikut jenis modul
+        if (modulSemasa === 'huruf') {
+            document.getElementById('txt-besar').innerText = item.h;
+            document.getElementById('txt-besar').style.display = 'block';
+            document.getElementById('visual-besar').innerText = item.v;
+            document.getElementById('txt-mudah').innerText = item.p;
+        } else if (modulSemasa === 'nombor') {
+            document.getElementById('txt-besar').innerText = item.h;
+            document.getElementById('txt-besar').style.display = 'block';
+            document.getElementById('visual-besar').innerText = item.v;
+            document.getElementById('txt-mudah').innerText = item.p;
+        } else {
+            // Bentuk & Warna tidak memerlukan teks abjad atas yang bertindih
+            document.getElementById('txt-besar').style.display = 'none';
+            document.getElementById('visual-besar').innerText = item.v;
+            document.getElementById('txt-mudah').innerText = item.p;
+        }
+
+        document.getElementById('pujian-belajar').style.visibility = 'hidden';
+        ulangAudio();
+    }
+
+    function navKad(arah) {
+        indeksSemasa += arah;
+        if (indeksSemasa < 0) indeksSemasa = dataSemasa.length - 1;
+        if (indeksSemasa >= dataSemasa.length) indeksSemasa = 0;
+        kemaskiniKad();
+    }
+
+    function ulangAudio() {
+        let item = dataSemasa[indeksSemasa];
+        if (modulSemasa === 'huruf') {
+            sebut(`${item.h}... ${item.p}`);
+        } else if (modulSemasa === 'nombor') {
+            sebut(item.p);
+        } else if (modulSemasa === 'bentuk' || modulSemasa === 'warna') {
+            sebut(item.p);
+        }
+    }
+
+    function sentuhKad() {
+        let txtBesar = document.getElementById('txt-besar');
+        let visualBesar = document.getElementById('visual-besar');
+        let pujianBox = document.getElementById('pujian-belajar');
+
+        // Animasi lembut melompat
+        txtBesar.classList.add('lompat');
+        visualBesar.classList.add('lompat');
+        
+        // Pilih pujian rawak
+        let pujian = pujianPositif[Math.floor(Math.random() * pujianPositif.length)];
+        pujianBox.innerText = pujian;
+        pujianBox.style.visibility = 'visible';
+
+        sebut(pujian);
+
+        setTimeout(() => {
+            txtBesar.classList.remove('lompat');
+            visualBesar.classList.remove('lompat');
+        }, 300);
+    }
+
+    // LOGIK PERMAINAN
+    let jawapanBetulIndeks = 0;
+    let dataSoalanSemasa = {};
+
+    function binaPermainan() {
+        tukarSkrin('skrin-permainan');
+        document.getElementById('pujian-main').style.visibility = 'hidden';
+        
+        // Pilih jenis kuiz secara rawak (0: Huruf, 1: Nombor, 2: Bentuk, 3: Warna)
+        let jenisKuiz = Math.floor(Math.random() * 4);
+        let setData = dataHuruf;
+        let prefiks = "Mana ";
+
+        if (jenisKuiz === 1) setData = dataNombor;
+        if (jenisKuiz === 2) setData = dataBentuk;
+        if (jenisKuiz === 3) setData = dataWarna;
+
+        // Ambil 2 item rawak secara unik
+        let item1 = setData[Math.floor(Math.random() * setData.length)];
+        let item2 = setData[Math.floor(Math.random() * setData.length)];
+        while (item1.p === item2.p) {
+            item2 = setData[Math.floor(Math.random() * setData.length)];
+        }
+
+        jawapanBetulIndeks = Math.floor(Math.random() * 2);
+        dataSoalanSemasa = jawapanBetulIndeks === 0 ? item1 : item2;
+
+        let soalanTeks = prefiks + (jenisKuiz === 1 ? dataSoalanSemasa.p.toLowerCase() : dataSoalanSemasa.p.toLowerCase());
+        document.getElementById('soalan-teks').innerText = soalanTeks.endsWith('?') ? soalanTeks : soalanTeks + "?";
+
+        // Tampilkan visual pilihan
+        document.getElementById('pilihan-1').innerText = item1.v;
+        document.getElementById('pilihan-2').innerText = item2.v;
+
+        sebut(document.getElementById('soalan-teks').innerText);
+    }
+
+    function semakJawapan(indeksDipilih) {
+        let pujianBox = document.getElementById('pujian-main');
+        let kadDipilih = document.getElementById(`pilihan-${indeksDipilih + 1}`);
+
+        if (indeksDipilih === jawapanBetulIndeks) {
+            let pujian = pujianPositif[Math.floor(Math.random() * pujianPositif.length)];
+            pujianBox.innerText = pujian + " " + dataSoalanSemasa.p + "!";
+            pujianBox.style.visibility = 'visible';
+            sebut(pujianBox.innerText);
+            
+            kadDipilih.classList.add('lompat');
+            setTimeout(() => {
+                kadDipilih.classList.remove('lompat');
+                binaPermainan();
+            }, 1500);
+        } else {
+            pujianBox.innerText = "Cuba lagi.";
+            pujianBox.style.visibility = 'visible';
+            sebut("Cuba lagi.");
+            kadDipilih.classList.add('goyang');
+            setTimeout(() => kadDipilih.classList.remove('goyang'), 400);
+        }
+    }
+
+    // MODUL IBU BAPA (PARENTS GATE)
+    function bukaIbuBapa() {
+        // Tapis keselamatan akses mudah untuk kanak-kanak berumur 1-2 tahun
+        let soalan = Math.floor(Math.random() * 3) + 2;
+        let jawapan = prompt(`Ibu bapa sahaja: Berapakah nilai ${soalan} tambah 1?`);
+        
+        if (parseInt(jawapan) === (soalan + 1)) {
+            document.getElementById('parent-huruf').innerText = `${dipelajari.huruf.size} daripada 26`;
+            document.getElementById('parent-nombor').innerText = `${dipelajari.nombor.size} daripada 10`;
+            document.getElementById('parent-bentuk').innerText = `${dipelajari.bentuk.size} daripada 6`;
+            document.getElementById('parent-warna').innerText = `${dipelajari.warna.size} daripada 9`;
+            tukarSkrin('skrin-ibu-bapa');
+        }
+    }
+</script>
+</body>
+</html>
